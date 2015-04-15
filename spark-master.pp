@@ -11,7 +11,8 @@ exec { "rpms":
 
 $packages = ["java-1.8.0-openjdk", "apache-maven", "git"]
 package { $packages: 
-    ensure => "installed"
+    ensure  => "installed",
+    require => [ Exec['wgets'], Exec['rpms'] ]
 }
 
 exec { "puppet-virt":
@@ -23,7 +24,7 @@ exec { "puppet-virt":
 exec { "conf-virt":
     command => "sed -i '18,21 s/^/#/' /etc/puppet/modules/virt/manifests/init.pp && sed -i '13 s/params:/params::servicename:/' /etc/puppet/modules/virt/manifests/init.pp && sed -i \"23 s/'qemu', //; s/kvm/qemu-kvm/; s/Fedora/CentOS/\" /etc/puppet/modules/virt/manifests/params.pp",
     path    => "/usr/local/bin/:/bin/:/usr/bin/",
-    require => Exec:['puppet-virt']
+    require => Exec['puppet-virt']
 }
 
 exec { "mnt":
@@ -35,7 +36,7 @@ mount { "/mnt":
     require => Exec['mnt'],
     ensure  => 'mounted',
     atboot  => 'true',
-    device  => '/root/disk',
+    device  => '/dev/sda4',
     fstype  => 'ext4',
     options => 'default'
 }
