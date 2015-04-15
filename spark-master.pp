@@ -38,5 +38,5 @@ mount { "/mnt":
     atboot  => 'true',
     device  => '/dev/sda4',
     fstype  => 'ext4',
-    options => 'default'
+    options => 'defaults'
 }
