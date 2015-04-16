@@ -1,42 +1,47 @@
-exec { "wgets":
-    command => "wget http://ftp.riken.jp/Linux/fedora/epel/RPM-GPG-KEY-EPEL-6 && wget http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm && wget http://repos.fedorapeople.org/repos/dchen/apache-maven/epel-apache-maven.repo -O /etc/yum.repos.d/epel-apache-maven.repo",
-    path    => "/usr/local/bin/:/bin/:/usr/bin/",
-}   
-    
-exec { "rpms":
-    command => "rpm -ivh epel-release-6-8.noarch.rpm",
-    path    => "/usr/local/bin/:/bin/:/usr/bin/",
-    require => Exec['wgets']
-}
-
-$packages = ["java-1.8.0-openjdk", "apache-maven", "git"]
-package { $packages: 
-    ensure  => "installed",
-    require => [ Exec['wgets'], Exec['rpms'] ]
-}
-
-exec { "puppet-virt":
-    command => "git clone https://github.com/carlasouza/puppet-virt.git && mv puppet-virt /etc/puppet/modules/virt",
-    path    => "/usr/local/bin/:/bin/:/usr/bin/",
-    require => Package[$packages]
+class setup-spark {
+    exec { "wget":
+        command => "wget http://d3kbcqa49mib13.cloudfront.net/spark-1.3.0.tgz",
+        path    => "/usr/local/bin/:/bin/:/usr/bin/",
 }   
 
-exec { "conf-virt":
-    command => "sed -i '18,21 s/^/#/' /etc/puppet/modules/virt/manifests/init.pp && sed -i '13 s/params:/params::servicename:/' /etc/puppet/modules/virt/manifests/init.pp && sed -i \"23 s/'qemu', //; s/kvm/qemu-kvm/; s/Fedora/CentOS/\" /etc/puppet/modules/virt/manifests/params.pp",
-    path    => "/usr/local/bin/:/bin/:/usr/bin/",
-    require => Exec['puppet-virt']
+    exec { "untar":
+        command => "tar xzf spark-1.3.0.tgz -C /mnt",
+        path    => "/bin/",
+        require => Exec['wget']
+    }
+
+    exec { "install":
+        command => "mvn -Dhadoop.version=1.2.1 -DskipTests clean package",
+        timeout => 0,
+        cwd     => "/mnt/spark-1.3.0",
+        path    => "/bin/:/usr/bin/",
+        require => Exec['untar']
+    }
+
+    file { '/mnt/spark-1.3.0/conf/spark-defaults.conf':
+        ensure  => 'present',
+        source  => '/mnt/spark-1.3.0/conf/spark-defaults.conf.template',
+        require => Exec['install'] 
+    }
+
+    file { '/mnt/spark-1.3.0/conf/spark-env.sh':
+        ensure  => 'present',
+        source  => '/mnt/spark-1.3.0/conf/spark-env.sh.template',
+        require => Exec['install'] 
+    }
+
+    exec { 'sparkconf':
+        command => "echo 'spark.eventLog.dir /mnt/spark-1.3.0/logs'  >> /mnt/spark-1.3.0/conf/spark-defaults.conf && echo 'spark.eventLog.enabled true'  >> /mnt/spark-1.3.0/conf/spark-defaults.conf && echo 'spark.master spark://${::ipaddress}:7077'  >> /mnt/spark-1.3.0/conf/spark-defaults.conf",
+        path    => "/bin/",
+        require => [ File['/mnt/spark-1.3.0/conf/spark-defaults.conf'],
+                     File['/mnt/spark-1.3.0/conf/spark-env.sh'] ]
+    }
+
+    exec { 'sparkenv':
+        command => "echo SPARK_MASTER_IP=$::ipaddress >> /mnt/spark-1.3.0/conf/spark-env.sh",
+        path    => "/bin/",
+        require => File['/mnt/spark-1.3.0/conf/spark-env.sh']
+    }
 }
 
-exec { "mnt":
-    command => "mkfs -t ext4 -F /dev/sda4",
-    path    => "/sbin",
-}
-
-mount { "/mnt":
-    require => Exec['mnt'],
-    ensure  => 'mounted',
-    atboot  => 'true',
-    device  => '/dev/sda4',
-    fstype  => 'ext4',
-    options => 'defaults'
-}
+include setup-spark
