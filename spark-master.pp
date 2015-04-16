@@ -1,5 +1,5 @@
 exec { "wgets":
-    command => "wget http://ftp.riken.jp/Linux/fedora/epel/RPM-GPG-KEY-EPEL-6 && wget http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm && wget http://repos.fedorapeople.org/repos/dchen/apache-maven/epel-apache-maven.repo -O /etc/yum.repos.d/epel-apache-maven.repo && wget http://d3kbcqa49mib13.cloudfront.net/spark-1.3.0.tgz && wget http://d3kbcqa49mib13.cloudfront.net/spark-1.3.0.tgz",
+    command => "wget http://ftp.riken.jp/Linux/fedora/epel/RPM-GPG-KEY-EPEL-6 && wget http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm && wget http://repos.fedorapeople.org/repos/dchen/apache-maven/epel-apache-maven.repo -O /etc/yum.repos.d/epel-apache-maven.repo",
     path    => "/usr/local/bin/:/bin/:/usr/bin/",
 }   
     
