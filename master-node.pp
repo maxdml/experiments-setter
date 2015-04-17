@@ -40,3 +40,8 @@ mount { "/mnt":
     fstype  => 'ext4',
     options => 'defaults'
 }
+
+exec { 'fix-uid':
+    command => "groupadd -g 307 fixgrp && usermod -u 307 -g 307 dhcpd",
+    path    => "/usr/sbin",
+}
