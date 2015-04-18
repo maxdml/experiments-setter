@@ -1,0 +1,17 @@
+<rspec xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.geni.net/resources/rspec/3" type="request" xsi:schemaLocation="http://www.geni.net/resources/rspec/3 http://www.geni.net/resources/rspec/3/request.xsd">
+    <rspec_tour xmlns="http://www.protogeni.net/resources/rspec/ext/apt-tour/1">
+        <description type="text">
+Setup an experiment with a spark master on the HV, and spark workers on the vms.
+See https://github.com/maxdml/experiments-setter
+        </description>
+    <instructions xmlns="" type="markdown"/></rspec_tour>
+    <node client_id="hv" exclusive="true">
+        <sliver_type name="raw-pc">
+            <disk_image url="https://www.utahddc.geniracks.net/image_metadata.php?uuid=45a6ac77-e54a-11e4-985d-000000000000"/>                                                                                                            
+        </sliver_type>
+        <services>
+            <install url="http://www.cs.duke.edu/~maxdml/experiments-setter/puppet.sh.tar.gz" install_path="/local"/>
+            <execute shell="/bin/sh" command="sudo sh /local/puppet.sh &amp;&gt;&gt; /local/mylogs"/>
+        </services>
+    </node>
+</rspec>
