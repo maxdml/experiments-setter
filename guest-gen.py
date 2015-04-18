@@ -15,9 +15,10 @@ parser.add_argument('vdisk', help='The name of the virtual disk')
 
 args = parser.parse_args()
 
-guestManifest = io.open(args.nodename + '.pp' , 'w')
+guestManifest = io.open('manifests/' + args.nodename + '.pp' , 'w')
 
 for line in io.open('guest.tpl', 'r'):
+    line = line.replace('$guest-node', args.nodename)
     line = line.replace('$nodename', args.nodename)
     line = line.replace('$ram', args.ram)
     line = line.replace('$cpus', args.cpus)
@@ -26,5 +27,5 @@ for line in io.open('guest.tpl', 'r'):
 
 guestManifest.close()
 
-guestsManifest = io.open('guests-nodes.pp', 'ab')
-guestsManifest.write('include ' + args.nodename + '\n')
+guestsManifest = io.open('manifests/guests-nodes.pp', 'ab')
+guestsManifest.write('import \'' + args.nodename + '.pp\'' + '\n')

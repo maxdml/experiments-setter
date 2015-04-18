@@ -1,4 +1,4 @@
-class guest-nodes {
+class $guest-node {
     exec { 'wget':
         command => 'wget http://www.cs.duke.edu/~maxdml/$vdisk -P /mnt',
         path    => '/usr/bin'
@@ -15,4 +15,4 @@ class guest-nodes {
 }
 
 include virt
-include guest-nodes
+include $guest-node
