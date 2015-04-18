@@ -22,7 +22,7 @@ exec { "puppet-virt":
 }   
 
 exec { "conf-virt":
-    command => "sed -i '18,21 s/^/#/' /etc/puppet/modules/virt/manifests/init.pp && sed -i '13 s/params:/params::servicename:/' /etc/puppet/modules/virt/manifests/init.pp && sed -i \"23 s/'qemu', //; s/kvm/qemu-kvm/; s/Fedora/CentOS/\" /etc/puppet/modules/virt/manifests/params.pp",
+    command => "sed -i \"23 s/'qemu', //; s/kvm/qemu-kvm/; s/Fedora/CentOS/\" /etc/puppet/modules/virt/manifests/params.pp",
     path    => "/usr/local/bin/:/bin/:/usr/bin/",
     require => Exec['puppet-virt']
 }
