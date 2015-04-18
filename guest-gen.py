@@ -15,7 +15,7 @@ parser.add_argument('vdisk', help='The name of the virtual disk')
 
 args = parser.parse_args()
 
-guestManifest = io.open(args.nodename + '.pp' , 'w+')
+guestManifest = io.open(args.nodename + '.pp' , 'w')
 
 for line in io.open('guest.tpl', 'r'):
     line = line.replace('$nodename', args.nodename)
@@ -25,3 +25,6 @@ for line in io.open('guest.tpl', 'r'):
     guestManifest.write(line)
 
 guestManifest.close()
+
+guestsManifest = io.open('guests-nodes.pp', 'ab')
+guestsManifest.write('include ' + args.nodename + '\n')
