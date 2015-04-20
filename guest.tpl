@@ -1,11 +1,12 @@
 class $guest-node {
-    exec { 'wget':
+    exec { 'wget-$vdisk':
         command => 'wget http://www.cs.duke.edu/~maxdml/$vdisk -P /mnt',
-        path    => '/usr/bin'
+        path    => '/usr/bin',
+        timeout => 0
     }
 
     virt { '$nodename':
-        require   => Exec['wget'],
+        require   => Exec['wget-$vdisk'],
         memory    => $ram,
         cpus      => $cpus,
         virt_path => '/mnt/$vdisk',
