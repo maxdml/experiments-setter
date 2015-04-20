@@ -11,11 +11,12 @@ class setup-spark {
     }
 
     exec { "install":
-        command => "mvn -Dhadoop.version=1.2.1 -DskipTests clean package",
-        timeout => 0,
-        cwd     => "/mnt/spark-1.3.0",
-        path    => "/bin/:/usr/bin/",
-        require => Exec['untar']
+        command     => "mvn -Dhadoop.version=1.2.1 -DskipTests clean package",
+        environment => "MAVEN_OPTS=$MAVEN_OPTS -Xmx2048m -XX:MaxPermSize=256m",
+        timeout     => 0,
+        cwd         => "/mnt/spark-1.3.0",
+        path        => "/bin/:/usr/bin/",
+        require     => Exec['untar']
     }
 
     file { '/mnt/spark-1.3.0/conf/spark-defaults.conf':
