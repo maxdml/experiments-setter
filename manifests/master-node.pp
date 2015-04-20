@@ -9,10 +9,16 @@ exec { "rpms":
     require => Exec['wgets']
 }
 
-$packages = ["java-1.8.0-openjdk", "apache-maven", "git"]
+$packages = ["java-1.8.0-openjdk", "apache-maven", "git", "qemu-kvm", "libvirt"]
 package { $packages: 
     ensure  => "installed",
     require => [ Exec['wgets'], Exec['rpms'] ]
+}
+
+exec { 'kvm_intel_mod':
+    command => "rmmod kvm_intel && modprobe kvm_intel",
+    path    => "/sbin",
+    require => Package[$packages]
 }
 
 exec { "puppet-virt":
