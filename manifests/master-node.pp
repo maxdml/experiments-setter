@@ -33,6 +33,7 @@ exec { "conf-virt":
     require => Exec['puppet-virt']
 }
 
+#maybe specific to Utah DDC nodes
 exec { "mnt":
     command => "mkfs -t ext4 -F /dev/sda4",
     path    => "/sbin",
@@ -47,6 +48,7 @@ mount { "/mnt":
     options => 'defaults'
 }
 
+#related to an UID conflict in the base emulab CentOS image.
 exec { 'fix-uid':
     command => "groupadd -g 307 fixgrp && usermod -u 307 -g 307 dhcpd",
     path    => "/usr/sbin",
