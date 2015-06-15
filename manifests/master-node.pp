@@ -9,7 +9,7 @@ exec { "rpms":
     require => Exec['wgets']
 }
 
-$packages = ["java-1.8.0-openjdk", "apache-maven", "git", "qemu-kvm", "libvirt"]
+$packages = ["java-1.8.0-openjdk", "java-1.8.0-openjdk-devel", "apache-maven", "git", "qemu-kvm", "libvirt"]
 package { $packages: 
     ensure  => "installed",
     require => [ Exec['wgets'], Exec['rpms'] ]
